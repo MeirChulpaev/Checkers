@@ -2,7 +2,6 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
 
         player[][] arr = {{new player(false, true, false, false), new player(false, false, true, false), new player(false, true, false, false), new player(false, false, true, false), new player(false, true, false, false), new player(false, false, true, false), new player(false, true, false, false), new player(false, false, true, false)},
                 {new player(false, false, true, false), new player(false, true, false, false), new player(false, false, true, false), new player(false, true, false, false), new player(false, false, true, false), new player(false, true, false, false), new player(false, false, true, false), new player(false, true, false, false)},
@@ -55,24 +54,25 @@ public class Main {
             int row1 = in.nextInt() - 1;
             System.out.println("and your column");
             int column1 = in.nextInt() - 1;
-            System.out.println("Enter your row where you wont mov");
+            System.out.println("Enter the row you want to move");
             int row2 = in.nextInt() - 1;
-            System.out.println("and your column where you wont mov");
+            System.out.println("Enter the column you want to move");
             int column2 = in.nextInt() - 1;
-
+            int a;
 
             if (arr[row1][column1].isKing() || (arr[row1][column1].isRed() && row1 < row2) || (!arr[row1][column1].isRed() && row1 > row2 || number == 0)) {
-
-                if ((arr[row1][column1].getType().equals(p) || arr[row1][column1].getType().equals("♚") || arr[row1][column1].getType().equals("♔")) && CheckMOv1(row1, column1, row2, column2) && IfCanMov1(row1, column1, arr) && IfCanMov2(row2, column2, arr) && number != 0) {
-                    DoTheMov1(row1, column1, arr, row2, column2);
+                a = 0;
+                if ((arr[row1][column1].getType().equals(p) || arr[row1][column1].getType().equals("♚") || arr[row1][column1].getType().equals("♔")) && CheckMOve(row1, column1, row2, column2, a, arr) && IfCanMove(row1, column1, arr, row2, column2) && number != 0) {
+                    DoTheMove(row1, column1, arr, row2, column2, a);
                     break;
                 }
-                if ((arr[row1][column1].getType().equals(p) || arr[row1][column1].getType().equals("♚") || arr[row1][column1].getType().equals("♔")) && CheckMOv2(row1, column1, row2, column2) && IfCanMov1(row1, column1, arr) && IfCanMov2(row2, column2, arr)) {
+                a = 1;
+                if ((arr[row1][column1].getType().equals(p) || arr[row1][column1].getType().equals("♚") || arr[row1][column1].getType().equals("♔")) && CheckMOve(row1, column1, row2, column2, a, arr) && IfCanMove(row1, column1, arr, row2, column2)) {
                     if (number == 0 && r2 != row1 && c2 != column1) {
                         System.out.println("you cant eat");
                         break;
                     }
-                    DoTheMov2(row1, column1, arr, row2, column2);
+                    DoTheMove(row1, column1, arr, row2, column2, a);
                     System.out.println("If you want to eat more Enter 1 else Enter 0..");
                     number = in.nextInt();
                     if (number == 0)
@@ -83,72 +83,62 @@ public class Main {
                         c2 = column2;
                         number--;
                     }
-
                 }
             }
             if (number < 0)
                 System.out.println("please do again");
             else
                 System.out.println(" Enter next eat or fix your Mistake");
-
         }
-
     }
 
-    public static void DoTheMov1(int row, int column, player[][] arr, int row2, int column2) {
-        boolean t = arr[row][column].isKing();
 
-        arr[row2][column2] = arr[row][column].copy();
-        if (row2 == 7 || row2 == 0)
-            arr[row2][column2].setKing(true);
-        if (t)
-            arr[row2][column2].setKing(true);
-
-        arr[row][column].setisspeis(true);
+    public static boolean IfCanMove(int row, int column, player[][] arr, int row2, int column2) {
+        return (!arr[row][column].isSpeis() && !arr[row][column].isnull() && arr[row2][column2].isSpeis());
     }
 
-    public static boolean IfCanMov1(int row, int column, player[][] arr) {
-        return (!arr[row][column].isSpeis() || !arr[row][column].isnull());
-
+    public static boolean CheckMOve(int row1, int column1, int row2, int column2, int a, player[][] arr) {
+        if (a == 0)
+            return (row1 == row2 + 1 && column1 == column2 + 1) || (row1 == row2 - 1 && column1 == column2 - 1) || (row1 == row2 - 1 && column1 == column2 + 1) || (row1 == row2 + 1 && column1 == column2 - 1);
+        else
+            return ((row1 == row2 + 2 && column1 == column2 + 2) && !arr[row1 - 1][column1 - 1].isSpeis()) || ((row1 == row2 - 2 && column1 == column2 - 2) && !arr[row1 + 1][column1 + 1].isSpeis()) || ((row1 == row2 - 2 && column1 == column2 + 2) && !arr[row1 + 1][column1 - 1].isSpeis()) || ((row1 == row2 + 2 && column1 == column2 - 2) && !arr[row1 - 1][column1 + 1].isSpeis());
     }
 
-    public static boolean IfCanMov2(int row2, int column2, player[][] arr) {
-        return arr[row2][column2].isSpeis();
-    }
+    public static void DoTheMove(int row1, int column1, player[][] arr, int row2, int column2, int a) {
+        if (a == 0) {
+            boolean t = arr[row1][column1].isKing();
 
-    public static boolean CheckMOv1(int row1, int column1, int row2, int column2) {
-        return (row1 == row2 + 1 && column1 == column2 + 1) || (row1 == row2 - 1 && column1 == column2 - 1) || (row1 == row2 - 1 && column1 == column2 + 1) || (row1 == row2 + 1 && column1 == column2 - 1);
-    }
+            arr[row2][column2] = arr[row1][column1].copy();
+            if (row2 == 7 || row2 == 0)
+                arr[row2][column2].setKing(true);
+            if (t)
+                arr[row2][column2].setKing(true);
 
-    public static boolean CheckMOv2(int row1, int column1, int row2, int column2) {
-        return (row1 == row2 + 2 && column1 == column2 + 2) || (row1 == row2 - 2 && column1 == column2 - 2) || (row1 == row2 - 2 && column1 == column2 + 2) || (row1 == row2 + 2 && column1 == column2 - 2);
-    }
+            arr[row1][column1].setisspeis(true);
+        } else {
+            boolean t = arr[row1][column1].isKing();
 
-    public static void DoTheMov2(int row1, int column1, player[][] arr, int row2, int column2) {
-        boolean t = arr[row1][column1].isKing();
+            arr[row2][column2] = arr[row1][column1].copy();
+            if (row2 == 7 || row2 == 0)
+                arr[row2][column2].setKing(true);
+            if (t)
+                arr[row2][column2].setKing(true);
 
-        arr[row2][column2] = arr[row1][column1].copy();
-        if (row2 == 7 || row2 == 0)
-            arr[row2][column2].setKing(true);
-        if (t)
-            arr[row2][column2].setKing(true);
-
-        arr[row1][column1].setisspeis(true);
-        if (row1 == row2 + 2 && column1 == column2 + 2) {
-            arr[row1 - 1][column1 - 1].setisspeis(true);
+            arr[row1][column1].setisspeis(true);
+            if (row1 == row2 + 2 && column1 == column2 + 2) {
+                arr[row1 - 1][column1 - 1].setisspeis(true);
+            }
+            if (row1 == row2 - 2 && column1 == column2 - 2) {
+                arr[row1 + 1][column1 + 1].setisspeis(true);
+            }
+            if (row1 == row2 - 2 && column1 == column2 + 2) {
+                arr[row1 + 1][column1 - 1].setisspeis(true);
+            }
+            if (row1 == row2 + 2 && column1 == column2 - 2) {
+                arr[row1 - 1][column1 + 1].setisspeis(true);
+            }
         }
-        if (row1 == row2 - 2 && column1 == column2 - 2) {
-            arr[row1 + 1][column1 + 1].setisspeis(true);
-        }
-        if (row1 == row2 - 2 && column1 == column2 + 2) {
-            arr[row1 + 1][column1 - 1].setisspeis(true);
-        }
-        if (row1 == row2 + 2 && column1 == column2 - 2) {
-            arr[row1 - 1][column1 + 1].setisspeis(true);
-        }
-
     }
-
     public static boolean Win(player[][] arr) {
         int CountRed = 0;
         int CountBlue = 0;
@@ -162,5 +152,4 @@ public class Main {
         }
         return CountRed == 0 || CountBlue == 0;
     }
-
 }
